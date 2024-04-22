@@ -1,6 +1,6 @@
-Here's a basic `README.md` file with the provided environment variables:
+Certainly, here's the modified README.md file:
 
-````markdown
+```markdown
 # Movie Ticket Booking App
 
 ## Introduction
@@ -20,17 +20,16 @@ Before running the application, ensure you have the following environment variab
 Example `.env` file:
 
 ```plaintext
-DB_URL=mongodb://localhost:27017/movi_tiket_booking
-PORT=8080
+DB_URL=DB_URL_string
+PORT=Port_num
 JWT_SECRET="U3dhbXBpd3JhbGZQYWNrYWdlcyE="
 EMAIL=reta72@ethereal.email
 PASSWORD=4vfRgJP8SZctv94p7X
 ```
-````
 
 ## Getting Started
 
-1. Clone the repository: `git clone <https://github.com/shikkandar/Movi_flex_server.git>`
+1. Clone the repository: `git clone https://github.com/shikkandar/Movi_flex_server.git`
 2. Install dependencies: `npm install`
 3. Set up your environment variables as described above.
 4. Run the application: `npm start`
@@ -42,8 +41,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
 ```
 
-Feel free to adjust the content and formatting according to your preferences and requirements.
-```
+This version provides clearer instructions for setting up the `DB_URL` and `PORT` environment variables. Adjustments can be made as needed.

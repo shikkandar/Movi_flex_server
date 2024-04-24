@@ -1,27 +1,43 @@
 import mongoose from "mongoose";
 
-export const UserSchema=new mongoose.Schema({
-    username : {
-        type: String,
-        required : [true, "Please provide unique Username"],
-        unique: [true, "Username Exist"]
-    },
-    email: {
-        type: String,
-        required : [true, "Please provide a unique email"],
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: [true, "Please provide a password"],
-        unique : false,
-    },
-    confirm_pwd: {
-        type: String,
-        required: [true, "Please confirm your password"]
-    },
-    profile: { type: String}
-    
+
+
+const UserSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: [true, "Please provide a unique Username"],
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: [true, "Please provide a unique email"],
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: [true, "Please provide a password"],
+  },
+  confirm_pwd: {
+    type: String,
+    required: [true, "Please confirm your password"],
+  },
+  createdAt: { type: String },
+  updatedAt: [{ type: String }],
+  loginAt: [{ type: String }],
+  firstName: { type: String },
+  lastName: { type: String },
+  phone: { type: Number },
+  address: { type: String },
+  city: { type: String },
+  state: { type: String },
+  country: { type: String },
+  zipcode: { type: String },
+  profile: { type: String },
+  gender:{ type: String },
+  dob:{ type: String },
+  admin:{type:String}
 });
 
-export default mongoose.model("User",UserSchema)
+const UserModel = mongoose.model("User", UserSchema);
+
+export default UserModel;

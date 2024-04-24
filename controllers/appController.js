@@ -3,9 +3,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import otpGenerator from "otp-generator";
-import { assign } from "nodemailer/lib/shared/index.js";
+import { getCurrentDateTime } from "../helper/dataTime.js";
 //verify user
 dotenv.config();
+
 export async function verifyUser(req, res, next) {
   try {
     const { username } = req.method === "GET" ? req.query : req.body;
@@ -18,6 +19,8 @@ export async function verifyUser(req, res, next) {
     return res.status(404).send({ error: "Authenticate Error" });
   }
 }
+
+
 
 //user regiter
 export async function register(req, res) {
@@ -45,7 +48,8 @@ export async function register(req, res) {
       checkExists("username", username, "Username already exists"),
       checkExists("email", email, "Email already exists"),
     ]);
-
+    const { formattedDate, formattedTime } = getCurrentDateTime();
+    
     const hashedPassword = await bcrypt.hash(password, 14);
     const hashedConfrimPwd = await bcrypt.hash(confirm_pwd, 14);
 
@@ -55,9 +59,11 @@ export async function register(req, res) {
       password: hashedPassword,
       confirm_pwd: hashedConfrimPwd,
       profile: profile || "",
+      createdAt: `Date:${formattedDate}-Time:${formattedTime}`, // Format the creation date
+      updatedAt: `Date:${formattedDate}-Time:${formattedTime}`, // Format the update date
     });
 
-    const result = await user.save();
+   await user.save();
     res.status(201).send({ msg: "User registered successfully" });
   } catch (error) {
     if (error.message === "Username already exists") {
@@ -69,6 +75,7 @@ export async function register(req, res) {
     }
   }
 }
+
 
 /**Get user */
 export async function getuser(req, res) {
@@ -105,10 +112,26 @@ export async function login(req, res) {
       return res.status(400).send({ error: "Invalid password" });
     }
 
+    const { formattedDate, formattedTime } = getCurrentDateTime();
+    const previousLoginAt = user.loginAt || [];
+    const currentLogindAt = `Date: ${formattedDate} Time: ${formattedTime}`;
+    const newLoginAt = [currentLogindAt, ...previousLoginAt];
+
+    await UserModel.updateOne(
+      { _id: user._id },
+      {
+        loginAt: newLoginAt,
+      }
+    );
+    let adminFlag=false
+    if (user.admin==="yes") {
+      adminFlag=true
+    }
     const token = jwt.sign(
       {
         userId: user._id,
         username: user.username,
+        auth:adminFlag,
       },
       process.env.JWT_SECRET,
       {
@@ -164,7 +187,7 @@ export async function resetPassword(req, res) {
     return res.status(401).send({ error: "Session expired or invalid!" });
   }
 
-  const { username, password ,confirm_pwd} = req.body;
+  const { username, password, confirm_pwd } = req.body;
 
   try {
     const user = await UserModel.findOne({ username });
@@ -174,10 +197,65 @@ export async function resetPassword(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 14);
     const hashedConfrimPwd = await bcrypt.hash(confirm_pwd, 14);
-    await UserModel.updateOne({ _id: user._id }, { password: hashedPassword,confirm_pwd:hashedConfrimPwd });
-    req.app.locals.resetSession=false;
+
+    const { formattedDate, formattedTime } = getCurrentDateTime();
+
+    const previousUpdatedAt = user.updatedAt || [];
+    const currentUpdatedAt = `Date: ${formattedDate} Time: ${formattedTime}`;
+    const newUpdatedAt = [currentUpdatedAt, ...previousUpdatedAt];
+
+    await UserModel.updateOne(
+      { _id: user._id },
+      {
+        password: hashedPassword,
+        confirm_pwd: hashedConfrimPwd,
+        updatedAt: newUpdatedAt,
+      }
+    );
+    req.app.locals.resetSession = false;
     return res.status(200).send({ msg: "Password updated successfully!" });
   } catch (error) {
     return res.status(500).send({ error: "Internal server error" });
   }
 }
+
+export async function updateUser(req, res) {
+  try {
+    const { userId } = req.user;
+
+    if (!userId) {
+      return res.status(404).send({ error: "User not found...!" }); // 404 is more appropriate here for "not found"
+    }
+
+    const body = req.body;
+
+    // Add logic to update the updatedAt field
+    const { formattedDate, formattedTime } = getCurrentDateTime();
+    const currentUpdatedAt = `Date: ${formattedDate} Time: ${formattedTime}`;
+
+    // Fetch the user document
+    const user = await UserModel.findOne({ _id: userId });
+
+    if (!user) {
+      return res.status(404).send({ error: "No user found with this ID." });
+    }
+
+    // Check if updatedAt exists, if not, initialize it as an empty array
+    const previousUpdatedAt = user.updatedAt || [];
+
+    // Add the currentUpdatedAt to the beginning of the array
+    const newUpdatedAt = [currentUpdatedAt, ...previousUpdatedAt];
+
+    // Update the body with the newUpdatedAt array
+    body.updatedAt = newUpdatedAt;
+
+    // Update the user document
+    await UserModel.updateOne({ _id: userId }, body);
+
+    return res.status(200).send({ msg: "Record Updated...!" }); // 201 should be used for creation. Use 200 for successful updates
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    return res.status(500).send({ error: "Internal Server Error" }); // Use 500 for server errors
+  }
+}
+

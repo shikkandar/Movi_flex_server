@@ -14,6 +14,7 @@ export async function verifyUser(req, res, next) {
     let exist = await UserModel.findOne({ username });
 
     if (!exist) return res.status(404).send({ error: "Can't find User" });
+    
     next();
   } catch (error) {
     return res.status(404).send({ error: "Authenticate Error" });
@@ -63,7 +64,7 @@ export async function register(req, res) {
       updatedAt: `Date:${formattedDate}-Time:${formattedTime}`, // Format the update date
     });
 
-   await user.save();
+    await user.save();
     res.status(201).send({ msg: "User registered successfully" });
   } catch (error) {
     if (error.message === "Username already exists") {
@@ -84,7 +85,8 @@ export async function getuser(req, res) {
     if (!username) {
       return res.status(400).json({ error: "Username is required" });
     }
-    const user = await UserModel.findOne({ username }).select("-password");
+    const user = await UserModel.findOne({ username }).select("-password -loginAt -updatedAt -createdAt");
+
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });

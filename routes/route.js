@@ -11,7 +11,7 @@
     router.route('/registerMail').post(registerMail);
     router.route(`/authendicate`).post(controller.verifyUser,(req,res)=>res.end())
     router.route('/login').post(controller.verifyUser, controller.login) //login app    
-
+    router.route('/protected').get(Auth,controller.verifyToken)
 
     /**Get routes */
 

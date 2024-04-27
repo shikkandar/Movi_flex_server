@@ -5,6 +5,9 @@ const adminRouter = Router();
 
 import * as controller from '../controllers/adminControler.js';
 
+//Get request
+adminRouter.route('/admin/protected').get(AdminAuth,controller.verifyToken)
+
 // Admin login route
 adminRouter.route('/admin/login').post(controller.verifyAdmin, controller.adminLogin);
 adminRouter.route('/theaters').get(controller.getTheaters)

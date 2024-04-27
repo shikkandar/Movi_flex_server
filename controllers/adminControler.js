@@ -66,10 +66,7 @@ export async function adminLogin(req, res) {
 
 export async function getTheaters(req, res) {
   try {
-    const theaters = await Movies.find(
-      {},
-      { name: 1, _id: 1, runningMovies: 1 }
-    ); // Project only the name field and exclude _id
+    const theaters = await Movies.find({}); // Project only the name field and exclude _id
     res.status(200).json(theaters); // Send only the theaters data
   } catch (err) {
     console.error(err);
@@ -101,4 +98,15 @@ export async function updateMoviList(req, res) {
     console.error(error); // Log the error for debugging
     return res.status(500).send({ error: "Internal Server Error" }); // Use 500 for server errors
   }
+}
+
+
+export async function verifyToken(req,res) {
+
+  if (!req.user) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  const { userId } = req.user;
+  res.status(200).json({ message: `Verified` });
+
 }

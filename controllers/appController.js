@@ -129,6 +129,9 @@ export async function login(req, res) {
     if (user.admin==="yes") {
       adminFlag=true
     }
+  
+
+
     const token = jwt.sign(
       {
         userId: user._id,
@@ -140,6 +143,7 @@ export async function login(req, res) {
         expiresIn: "1d",
       }
     );
+ 
     return res.status(200).send({
       msg: "Login sucessful!",
       username: user.username,
@@ -261,3 +265,12 @@ export async function updateUser(req, res) {
   }
 }
 
+export async function verifyToken(req,res) {
+
+  if (!req.user) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  const { userId } = req.user;
+  res.status(200).json({ message: `Protected route accessed by user ${userId}` });
+
+}

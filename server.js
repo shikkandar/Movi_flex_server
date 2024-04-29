@@ -5,6 +5,7 @@ import connect from './database/conn.js';
 import dotenv from 'dotenv';
 import router from './routes/route.js';
 import adminRouter from './routes/adminRoutes.js'
+import bookingRouter from './routes/bookingRoutes.js';
 dotenv.config()
 
 const app = express();
@@ -23,6 +24,7 @@ app.get('/', (req, res) => {
 
 app.use('/api',router)
 app.use('/api',adminRouter)
+app.use('/api',bookingRouter)
 
 // Connect to the database and start the server
 connect()

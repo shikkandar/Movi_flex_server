@@ -1,6 +1,7 @@
 // adminRouter.js
 import AdminAuth from "../middleware/adminAuth.js";
 import { Router } from "express";
+
 const adminRouter = Router();
 
 import * as controller from '../controllers/adminControler.js';

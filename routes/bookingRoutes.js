@@ -28,5 +28,6 @@ bookingRouter.route('/PonAmutha/booking_ticket').post(controller.PonAmuthabookin
 bookingRouter.route('/Sathiyam/booking_ticket').post(controller.SathiyambookingTicket)
 bookingRouter.route('/Vettri/booking_ticket').post(controller.VettribookingTicket)
 
-
+/**PUT request */
+bookingRouter.route('/Kalaiarangam/update').put(controller.KalaiarangamUpdate)
 export default bookingRouter;

@@ -19,10 +19,10 @@ async function bookingTicket(Model, req, res) {
       theaterName,
       moviName,
       bookingTime: {
-        ["11:00-AM"]: [allSeats],
-        ["02:15-PM"]: [allSeats],
-        ["06:15-PM"]: [allSeats],
-        ["10:00-PM"]: [allSeats],
+        ["11:00-AM"]: allSeats,
+        ["02:15-PM"]: allSeats,
+        ["06:15-PM"]: allSeats,
+        ["10:00-PM"]: allSeats,
       },
     });
     await bookingHistory.save();
@@ -122,4 +122,65 @@ export async function SathiyamData(req, res) {
 }
 export async function VettriData(req, res) {
   return bookingData(Db_Model.VettriModel,req, res);
+}
+
+
+/** Put api datas */
+  async function bookingUpdate(Model, req, res) {
+    try {
+      const { bookingDate, bookingTime, ...seats } = req.body;
+
+      if (!bookingDate || !bookingTime) {
+        return res.status(400).json({ error: "bookingDate and Time required" });
+      }
+    
+      const row = [];
+      const keys = [];
+      
+      for (const key in seats) {
+        if (seats.hasOwnProperty(key)) {
+          const splitKey = key.split('')[0];
+          row.push(splitKey);
+          keys.push(key);
+        }
+      }
+      
+      // Find the document matching the bookingDate
+      let data = await Model.findOne({ bookingDate });
+
+      if (!data) {
+        return res.status(404).send({ error: "No Record for this date" });
+      }
+
+      const updatedSeatsData = { ...data.bookingTime };
+
+      // Update only the specified row
+      row.forEach(rowKey => {
+        if (!updatedSeatsData[bookingTime][rowKey]) {
+          return res.status(400).send({ error: `Row ${rowKey} does not exist in bookingTime ${bookingTime}` });
+        }
+        keys.forEach(seatKey => {
+          if (updatedSeatsData[bookingTime][rowKey][seatKey]) {
+            updatedSeatsData[bookingTime][rowKey][seatKey] = seats[seatKey];
+          }
+        });
+      });
+
+      // Update the document with the updated seats data
+      await Model.updateOne({ bookingDate }, { $set: { [`bookingTime.${bookingTime}`]: updatedSeatsData[bookingTime] } });
+
+      // Fetch the updated data
+      data = await Model.findOne({ bookingDate });
+
+      return res.status(200).send(data);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send({ error: "Internal Server Error" });
+    }
+  }
+
+
+
+export async function KalaiarangamUpdate(req, res) {
+  return bookingUpdate(Db_Model.KalaiarangamModel, req, res);
 }

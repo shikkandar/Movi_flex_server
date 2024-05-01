@@ -11,7 +11,7 @@
     router.route('/registerMail').post(registerMail);
     router.route(`/authendicate`).post(controller.verifyUser,(req,res)=>res.end())
     router.route('/login').post(controller.verifyUser, controller.login) //login app    
-    router.route('/protected').get(Auth,controller.verifyToken)
+    router.route('/user/booking').post(controller.verifyUser,controller.bookingHistory)
 
     /**Get routes */
 
@@ -19,7 +19,7 @@
     router.route('/generateOTP').get(controller.verifyUser,localVariables,controller.generateOTP)//generate random otp
     router.route('/verifyOTP').get(controller.verifyUser,controller.verifyOTP)//verify generated otp
     router.route('/createResetSession').get(controller.createResetSesstion)
-
+    router.route('/protected').get(Auth,controller.verifyToken)
     /**PUT methods */
     router.route('/resetPassword').put(controller.verifyUser,controller.resetPassword)//use to reset password
     router.route('/updateuser').put(Auth, controller.updateUser);

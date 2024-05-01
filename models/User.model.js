@@ -33,6 +33,7 @@ const UserSchema = new mongoose.Schema({
   profile: { type: String },
   gender:{ type: String },
   dob:{ type: String },
+  bookingHistory:{type:Object},
   admin:{type:String}
 });
 

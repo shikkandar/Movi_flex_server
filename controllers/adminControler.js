@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import Movies from "../models/Movi.model.js";
+import * as Db_Model from "../models/BookingHistory.js";
 
 dotenv.config();
 
@@ -110,3 +111,37 @@ export async function verifyToken(req,res) {
   res.status(200).json({ message: `Verified` });
 
 }
+export async function bookingaAllData(req, res) {
+  try {
+    const data = await Db_Model.KalaiarangamModel.find({});
+
+    const groupedData = {};
+
+    data.forEach(doc => {
+      for (const timeSlot in doc.bookingTime) {
+        if (!groupedData[timeSlot]) {
+          groupedData[timeSlot] = {};
+        }
+        for (const series in doc.bookingTime[timeSlot]) {
+          if (!groupedData[timeSlot][series]) {
+            groupedData[timeSlot][series] = {};
+          }
+          for (const seat in doc.bookingTime[timeSlot][series]) {
+            const occupied = doc.bookingTime[timeSlot][series][seat].occupied;
+            if (occupied) {
+              if (!groupedData[timeSlot][series][seat]) {
+                groupedData[timeSlot][series][seat] = [];
+              }
+              groupedData[timeSlot][series][seat].push({ _id: doc._id, bookingDate: doc.bookingDate, theaterName: doc.theaterName, moviName: doc.moviName });
+            }
+          }
+        }
+      }
+    });
+
+    return res.status(200).send({ data: groupedData });
+  } catch (error) {
+    return res.status(500).send({ Error: "Internal server error" });
+  } 
+}
+

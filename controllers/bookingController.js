@@ -174,3 +174,30 @@ async function bookingUpdate(Model, req, res) {
 export async function KalaiarangamUpdate(req, res) {
   return bookingUpdate(Db_Model.KalaiarangamModel, req, res);
 }
+export async function AjanthaUpdate(req, res) {
+  return bookingUpdate(Db_Model.AjanthaModel, req, res);
+}
+export async function AmuthaUpdate(req, res) {
+  return bookingUpdate(Db_Model.AmuthaModel, req, res);
+}
+export async function ElloraUpdate(req, res) {
+  return bookingUpdate(Db_Model.ElloraModel, req, res);
+}
+export async function KavithalayaUpdate(req, res) {
+  return bookingUpdate(Db_Model.KavithalayaModel, req, res);
+}
+export async function MaharajaUpdate(req, res) {
+  return bookingUpdate(Db_Model.MaharajaModel, req, res);
+}
+export async function PVRUpdate(req, res) {
+  return bookingUpdate(Db_Model.PVRModel, req, res);
+}
+export async function PonAmuthaUpdate(req, res) {
+  return bookingUpdate(Db_Model.PonAmuthaModel, req, res);
+}
+export async function SathiyamUpdate(req, res) {
+  return bookingUpdate(Db_Model.SathiyamModel, req, res);
+}
+export async function VettriUpdate(req, res) {
+  return bookingUpdate(Db_Model.VettriModel, req, res);
+}

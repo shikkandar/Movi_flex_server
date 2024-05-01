@@ -14,14 +14,12 @@ export async function verifyUser(req, res, next) {
     let exist = await UserModel.findOne({ username });
 
     if (!exist) return res.status(404).send({ error: "Can't find User" });
-    
+
     next();
   } catch (error) {
     return res.status(404).send({ error: "Authenticate Error" });
   }
 }
-
-
 
 //user regiter
 export async function register(req, res) {
@@ -50,7 +48,7 @@ export async function register(req, res) {
       checkExists("email", email, "Email already exists"),
     ]);
     const { formattedDate, formattedTime } = getCurrentDateTime();
-    
+
     const hashedPassword = await bcrypt.hash(password, 14);
     const hashedConfrimPwd = await bcrypt.hash(confirm_pwd, 14);
 
@@ -77,7 +75,6 @@ export async function register(req, res) {
   }
 }
 
-
 /**Get user */
 export async function getuser(req, res) {
   const { username } = req.params;
@@ -85,8 +82,9 @@ export async function getuser(req, res) {
     if (!username) {
       return res.status(400).json({ error: "Username is required" });
     }
-    const user = await UserModel.findOne({ username }).select("-password -loginAt -updatedAt -createdAt");
-
+    const user = await UserModel.findOne({ username }).select(
+      "-password -loginAt -updatedAt -createdAt"
+    );
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -125,25 +123,23 @@ export async function login(req, res) {
         loginAt: newLoginAt,
       }
     );
-    let adminFlag=false
-    if (user.admin==="yes") {
-      adminFlag=true
+    let adminFlag = false;
+    if (user.admin === "yes") {
+      adminFlag = true;
     }
-  
 
-const key="spiderman"
     const token = jwt.sign(
       {
         userId: user._id,
         username: user.username,
-        auth:adminFlag,
+        auth: adminFlag,
       },
       process.env.JWT_SECRET,
       {
         expiresIn: "1d",
       }
     );
- 
+
     return res.status(200).send({
       msg: "Login sucessful!",
       username: user.username,
@@ -265,12 +261,42 @@ export async function updateUser(req, res) {
   }
 }
 
-export async function verifyToken(req,res) {
-
+export async function verifyToken(req, res) {
   if (!req.user) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: "Unauthorized" });
   }
   const { userId } = req.user;
-  res.status(200).json({ message: `Protected route accessed by user ${userId}` });
-
+  res
+    .status(200)
+    .json({ message: `Protected route accessed by user ${userId}` });
 }
+
+export async function bookingHistory(req, res) {
+  const { username, ticketNum, bookingHistory } = req.body;
+  console.log(req.body);
+  try {
+    if (!bookingHistory || !username || !ticketNum) {
+      return res.status(400).send({ error: "username, ticketNum, and bookingHistory are required" });
+    }
+
+    const user = await UserModel.findOne({ username });
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+    
+    // Merge the existing and new booking history
+    const updatedBookingHistory = { 
+  
+      [ticketNum]: bookingHistory ,...user.bookingHistory// Assign booking history under the ticketNum key
+    };
+
+    // Update the user with the merged booking history
+    await UserModel.updateOne({ username }, { bookingHistory: updatedBookingHistory });
+
+    return res.status(200).send("Update Successfully");
+  } catch (error) {
+    console.error("Error updating booking history:", error);
+    return res.status(500).send({ error: "Internal Server Error" });
+  }
+}
+

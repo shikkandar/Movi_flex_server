@@ -28,6 +28,15 @@ bookingRouter.route('/PonAmutha/booking_ticket').post(controller.PonAmuthabookin
 bookingRouter.route('/Sathiyam/booking_ticket').post(controller.SathiyambookingTicket)
 bookingRouter.route('/Vettri/booking_ticket').post(controller.VettribookingTicket)
 
-/**PUT request */
-bookingRouter.route('/Kalaiarangam/update').put(controller.KalaiarangamUpdate)
+/** PUT requests */
+bookingRouter.route('/Kalaiarangam/update').put(controller.KalaiarangamUpdate);
+bookingRouter.route('/Ajantha/update').put(controller.AjanthaUpdate);
+bookingRouter.route('/Amutha/update').put(controller.AmuthaUpdate);
+bookingRouter.route('/Ellora/update').put(controller.ElloraUpdate);
+bookingRouter.route('/Kavithalaya/update').put(controller.KavithalayaUpdate);
+bookingRouter.route('/Maharaja/update').put(controller.MaharajaUpdate);
+bookingRouter.route('/PVR/update').put(controller.PVRUpdate);
+bookingRouter.route('/PonAmutha/update').put(controller.PonAmuthaUpdate);
+bookingRouter.route('/Sathiyam/update').put(controller.SathiyamUpdate);
+bookingRouter.route('/Vettri/update').put(controller.VettriUpdate);
 export default bookingRouter;

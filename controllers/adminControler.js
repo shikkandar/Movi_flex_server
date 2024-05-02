@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import Movies from "../models/Movi.model.js";
 import * as Db_Model from "../models/BookingHistory.js";
+import UserModel from "../models/User.model.js";
 
 dotenv.config();
 
@@ -101,15 +102,12 @@ export async function updateMoviList(req, res) {
   }
 }
 
-
-export async function verifyToken(req,res) {
-
+export async function verifyToken(req, res) {
   if (!req.user) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: "Unauthorized" });
   }
   const { userId } = req.user;
   res.status(200).json({ message: `Verified` });
-
 }
 export async function bookingaAllData(req, res) {
   try {
@@ -117,7 +115,7 @@ export async function bookingaAllData(req, res) {
 
     const groupedData = {};
 
-    data.forEach(doc => {
+    data.forEach((doc) => {
       for (const timeSlot in doc.bookingTime) {
         if (!groupedData[timeSlot]) {
           groupedData[timeSlot] = {};
@@ -132,7 +130,12 @@ export async function bookingaAllData(req, res) {
               if (!groupedData[timeSlot][series][seat]) {
                 groupedData[timeSlot][series][seat] = [];
               }
-              groupedData[timeSlot][series][seat].push({ _id: doc._id, bookingDate: doc.bookingDate, theaterName: doc.theaterName, moviName: doc.moviName });
+              groupedData[timeSlot][series][seat].push({
+                _id: doc._id,
+                bookingDate: doc.bookingDate,
+                theaterName: doc.theaterName,
+                moviName: doc.moviName,
+              });
             }
           }
         }
@@ -142,6 +145,24 @@ export async function bookingaAllData(req, res) {
     return res.status(200).send({ data: groupedData });
   } catch (error) {
     return res.status(500).send({ Error: "Internal server error" });
-  } 
+  }
 }
 
+export async function verifyTicket(req, res) {
+  const { username ,user ,tiketNum } = req.query;
+  
+  try {
+    const admin=await AdminModel.findOne({username})
+    if (!admin) {
+      return res.status(401).send({ status:"Unauthorized Admin"});
+    }
+    const data= await UserModel.findOne({username:user})
+    const requestedData=data.bookingHistory[tiketNum]
+    if (!requestedData) {
+      return res.status(401).send({ status:"Unauthorized Ticket"});
+    }
+    return res.status(200).send({ status:"Tiket verified",data:requestedData});
+  } catch (error) {
+    return res.status(500).send({ Error: "Internal server error" });
+  }
+}

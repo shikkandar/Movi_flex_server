@@ -275,8 +275,8 @@ export async function bookingHistory(req, res) {
   const { username, ticketNum, bookingHistory } = req.body;
   console.log(req.body);
   try {
-    if (!bookingHistory || !username || !ticketNum) {
-      return res.status(400).send({ error: "username, ticketNum, and bookingHistory are required" });
+    if (!username || !ticketNum) {
+      return res.status(400).send({ error: "username and ticketNum are required" });
     }
 
     const user = await UserModel.findOne({ username });
@@ -284,11 +284,15 @@ export async function bookingHistory(req, res) {
       return res.status(404).send({ error: "User not found" });
     }
     
-    // Merge the existing and new booking history
-    const updatedBookingHistory = { 
-  
-      [ticketNum]: bookingHistory ,...user.bookingHistory// Assign booking history under the ticketNum key
-    };
+    let updatedBookingHistory;
+
+    if (!user.bookingHistory) {
+      // If no booking history exists for the user, create a new one
+      updatedBookingHistory = { [ticketNum]: bookingHistory };
+    } else {
+      // If booking history exists, merge the existing and new booking history
+      updatedBookingHistory = { [ticketNum]: bookingHistory, ...user.bookingHistory };
+    }
 
     // Update the user with the merged booking history
     await UserModel.updateOne({ username }, { bookingHistory: updatedBookingHistory });
@@ -299,4 +303,5 @@ export async function bookingHistory(req, res) {
     return res.status(500).send({ error: "Internal Server Error" });
   }
 }
+
 

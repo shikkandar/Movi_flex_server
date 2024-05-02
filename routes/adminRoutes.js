@@ -12,6 +12,7 @@ adminRouter.route('/admin/allBookingData').get(controller.bookingaAllData)
 
 // Admin login route
 adminRouter.route('/admin/login').post(controller.verifyAdmin, controller.adminLogin);
+adminRouter.route('/admin/verifyTicket').get(controller.verifyTicket)
 adminRouter.route('/theaters').get(controller.getTheaters)
 
 //Put request

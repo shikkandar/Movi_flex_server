@@ -69,6 +69,8 @@ export async function register(req, res) {
       return res.status(409).send({ error: error.message });
     } else if (error.message === "Email already exists") {
       return res.status(422).send({ error: error.message });
+    }else if (error.message === "Email already exists") {
+      return res.status(422).send({ error: error.message });
     } else {
       return res.status(500).send({ error: error.message || "Server error" });
     }

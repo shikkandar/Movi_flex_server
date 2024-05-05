@@ -126,7 +126,7 @@ export async function login(req, res) {
       }
     );
     let adminFlag = false;
-    if (user.admin === "yes") {
+    if (user.admin === process.env.ADMIN_KEY) {
       adminFlag = true;
     }
 
